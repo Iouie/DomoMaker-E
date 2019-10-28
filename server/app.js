@@ -14,7 +14,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/DomoMaker';
 
 mongoose.connect(dbURL, {
-  useMongoClient: true
+  useMongoClient: true,
 }, (err) => {
   if (err) {
     console.log('Could not connect to mongodb');
@@ -29,7 +29,7 @@ app.use('/assets', express.static(path.resolve(`${__dirname}/../hosted/`)));
 app.use(favicon(`${__dirname}/../hosted/img/favicon.png`));
 app.use(compression());
 app.use(bodyParser.urlencoded({
-  extended: true
+  extended: true,
 }));
 app.use(session({
   key: 'sessionid',
@@ -38,7 +38,7 @@ app.use(session({
   saveUninitialized: true,
 }));
 app.engine('handlebars', expressHandlebars({
-  defaultLayout: 'main'
+  defaultLayout: 'main',
 }));
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/../views`);
