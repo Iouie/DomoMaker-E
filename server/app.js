@@ -10,7 +10,7 @@ const expressHandlebars = require('express-handlebars');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/DomoMaker';
+const dbURL = process.env.MONGODB_URI || 'mongodb://heroku_mljrjz2l:bdeelvfp4k8fivbe6cuep0siua@ds211708.mlab.com:11708/heroku_mljrjz2l';
 
 mongoose.connect(dbURL, {
   useMongoClient: true,
