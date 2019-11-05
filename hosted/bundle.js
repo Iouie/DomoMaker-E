@@ -1,78 +1,78 @@
 "use strict";
 
-var handleError = function handleError(message) {
-  $("#errorMessage").text(message);
-  $("#domoMessage").animate({ width: 'toggle' }, 350);
-};
-
-var sendAjax = function sendAjax(action, data) {
-  $.ajax({
-    cache: false,
-    type: "POST",
-    url: action,
-    data: data,
-    dataType: "json",
-    success: function success(result, status, xhr) {
-      $("#domoMessage").animate({ width: 'hide' }, 350);
-
-      window.location = result.redirect;
-    },
-    error: function error(xhr, status, _error) {
-      var messageObj = JSON.parse(xhr.responseText);
-
-      handleError(messageObj.error);
-    }
-  });
-};
-
-$(document).ready(function () {
-  $("#signupForm").on("submit", function (e) {
-    e.preventDefault();
-
-    $("#domoMessage").animate({ width: 'hide' }, 350);
-
-    if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
-      handleError("RAWR! All fields are required");
-      return false;
-    }
-
-    if ($("#pass").val() !== $("#pass2").val()) {
-      handleError("RAWR! Passwords do not match");
-      return false;
-    }
-
-    sendAjax($("#signupForm").attr("action"), $("#signupForm").serialize());
-
-    return false;
-  });
-
-  $("#loginForm").on("submit", function (e) {
-    e.preventDefault();
-
-    $("#domoMessage").animate({ width: 'hide' }, 350);
-
-    if ($("#user").val() == '' || $("#pass").val() == '') {
-      handleError("RAWR! Username or password is empty");
-      return false;
-    }
-
-    sendAjax($("#loginForm").attr("action"), $("#loginForm").serialize());
-
-    return false;
-  });
-
-  $("#domoForm").on("submit", function (e) {
+var HandleDomo = function HandleDomo(e) {
     e.preventDefault();
 
     $("#domoMessage").animate({ width: 'hide' }, 350);
 
     if ($("#domoName").val() == '' || $("#domoAge").val() == '') {
-      handleError("RAWR! All fields are required");
-      return false;
+        handleError("RAWR! All fields are required");
+        return false;
     }
 
-    sendAjax($("#domoForm").attr("action"), $("#domoForm").serialize());
+    sendAjax('POST', $("#domoForm").attr("action"), $("#domoForm").serialize(), function () {
+        loadDomosFromServer();
+    });
 
     return false;
-  });
-});
+    ;
+};
+
+var DomoForm = function DomoForm(props) {
+    return React.createElement(
+        "form",
+        { id: "signupForm",
+            name: "signupForm",
+            onSubmit: handleSignup,
+            action: "/signup",
+            method: "POST",
+            className: "mainForm"
+        },
+        React.createElement(
+            "label",
+            { htmlFor: "username" },
+            "Username: "
+        ),
+        React.createElement("input", { id: "user", type: "text", name: "username", placeholder: "username" }),
+        React.createElement(
+            "label",
+            { htmlFor: "pass" },
+            "Password: "
+        ),
+        React.createElement("input", { id: "pass", type: "password", name: "pass", placeholder: "password" }),
+        React.createElement(
+            "label",
+            { htmlFor: "pass2" },
+            "Password: "
+        ),
+        React.createElement("input", { id: "pass2", type: "password", name: "pass2", placeholder: "retype password" }),
+        React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+        React.createElement("input", { className: "formSubmit", type: "submit", value: "Sign Up" })
+    );
+};
+"use strict";
+
+var handleError = function handleError(message) {
+    $("#errorMessage").text(message);
+    $("#domoMessage").animate({ width: 'toggle' }, 350);
+};
+
+var redirect = function redirect(response) {
+    $("#domoMessage").animate({ width: 'hide' }, 350);
+    window.location = response.redirect;
+};
+
+var sendAjax = function sendAjax(type, action, data, success) {
+    $.ajax({
+        cache: false,
+        type: type,
+        url: action,
+        data: data,
+        dataType: "json",
+        success: success,
+        error: function error(xhr, status, _error) {
+            var messageObj = JSON.parse(xhr.responseText);
+            handleError(messageObj.error);
+        }
+    });
+};
