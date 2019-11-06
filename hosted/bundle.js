@@ -21,35 +21,95 @@ var HandleDomo = function HandleDomo(e) {
 var DomoForm = function DomoForm(props) {
     return React.createElement(
         "form",
-        { id: "signupForm",
-            name: "signupForm",
-            onSubmit: handleSignup,
-            action: "/signup",
+        { id: "domoForm",
+            name: "domoForm",
+            onSubmit: HandleDomo,
+            action: "/maker",
             method: "POST",
-            className: "mainForm"
+            className: "domoForm"
         },
         React.createElement(
             "label",
-            { htmlFor: "username" },
+            { htmlFor: "name" },
             "Username: "
         ),
-        React.createElement("input", { id: "user", type: "text", name: "username", placeholder: "username" }),
+        React.createElement("input", { id: "domoName", type: "text", name: "name", placeholder: "Domo Name" }),
         React.createElement(
             "label",
-            { htmlFor: "pass" },
-            "Password: "
+            { htmlFor: "age" },
+            "Age: "
         ),
-        React.createElement("input", { id: "pass", type: "password", name: "pass", placeholder: "password" }),
-        React.createElement(
-            "label",
-            { htmlFor: "pass2" },
-            "Password: "
-        ),
-        React.createElement("input", { id: "pass2", type: "password", name: "pass2", placeholder: "retype password" }),
+        React.createElement("input", { id: "domoAge", type: "text", name: "age", placeholder: "Domo Age" }),
         React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-        React.createElement("input", { className: "formSubmit", type: "submit", value: "Sign Up" })
+        React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
     );
 };
+
+var DomoList = function DomoList(props) {
+    if (props.domos.length === 0) {
+        return React.createElement(
+            "div",
+            { className: "domoList" },
+            React.createElement(
+                "h3",
+                { className: "emptyDomo" },
+                "No Domos yet"
+            )
+        );
+    }
+
+    var domoNodes = props.domos.map(function (domo) {
+        return React.createElement(
+            "div",
+            { key: domo._id, className: "domo" },
+            React.createElement("img", { src: "/assets/img/domoface.jpeg", alt: "domo face", className: "domoFace" }),
+            React.createElement(
+                "h3",
+                { className: "domoName" },
+                "Name: ",
+                domo.name,
+                " "
+            ),
+            React.createElement(
+                "h3",
+                { className: "domoAge" },
+                "Age: ",
+                domo.age,
+                " "
+            )
+        );
+    });
+
+    return React.createElement(
+        "div",
+        { className: "domoList" },
+        domoNodes
+    );
+};
+
+var loadDomosFromServer = function loadDomosFromServer() {
+    sendAjax('GET', '/getDomos', null, function (data) {
+        ReactDOM.render(React.createElement(DomoList, { domos: data.domos }), document.querySelector("#domos"));
+    });
+};
+
+var setup = function setup(csrf) {
+    ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector("#makeDomo"));
+
+    ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector("#domos"));
+
+    loadDomosFromServer;
+};
+
+var getToken = function getToken() {
+    sendAjax('GET', '/getToken', null, function (result) {
+        setup(result.csrfToken);
+    });
+};
+
+$(document).ready(function () {
+    getToken();
+});
 "use strict";
 
 var handleError = function handleError(message) {
