@@ -86,7 +86,7 @@ const deleteDomo = (req, res) => {
     if (err || docs.length === 0) {
       return res.status(400).json({ error: 'No Domo exists' });
     }
-    Domo.DomoModel.removeAllByName(name, (error) => {
+    return Domo.DomoModel.removeAllByName(name, (error) => {
       if (error) {
         return res.status(400).json({ error: 'an error occured' });
       }
