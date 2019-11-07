@@ -19,6 +19,12 @@ const DomoSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
+  // added level for domos
+  level: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
   owner: {
     type: mongoose.Schema.ObjectId,
     required: true,
@@ -40,7 +46,21 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
     owner: convertId(ownerId),
   };
 
-  return DomoModel.find(search).select('name age').exec(callback);
+  return DomoModel.find(search).select('name age level').exec(callback);
+};
+
+DomoSchema.statics.findByName = (name, callback) => {
+  const search = {
+    name,
+  };
+  return DomoModel.find(search).exec(callback);
+};
+
+DomoSchema.statics.removeAllByName = (domoName, callback) => {
+  const search = {
+    name: domoName,
+  };
+  return DomoModel.deleteMany(search, callback);
 };
 
 DomoModel = mongoose.model('Domo', DomoSchema);
